@@ -41,21 +41,21 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = "MainActivity";
 
-  private RecyclerView photoList;
-  private RecyclerView puzzleList;
+  private RecyclerView photoList;  // 图片列表
+  private RecyclerView puzzleList; // 拼图列表
 
   private PuzzleAdapter puzzleAdapter;
   private PhotoAdapter photoAdapter;
 
-  private List<Bitmap> bitmaps = new ArrayList<>();
-  private ArrayMap<String, Bitmap> arrayBitmaps = new ArrayMap<>();
-  private ArrayList<String> selectedPath = new ArrayList<>();
+  private List<Bitmap> bitmapList = new ArrayList<>(); // 选中并且加载后的图片数据
+  private ArrayMap<String, Bitmap> arrayBitmaps = new ArrayMap<>(); // 被选中图片的路径,图片map
+  private ArrayList<String> selectedPath = new ArrayList<>(); // 选中图片的路径
 
   private PuzzleHandler puzzleHandler;
 
-  private List<Target> targets = new ArrayList<>();
+  private List<Target> targets = new ArrayList<>(); // Picaso存放图片的对象列表
 
-  private int deviceWidth;
+  private int deviceWidth;// 设备显示宽度
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     photoList = (RecyclerView) findViewById(R.id.photo_list);
     puzzleList = (RecyclerView) findViewById(R.id.puzzle_list);
 
-    photoAdapter = new PhotoAdapter();
+    photoAdapter = new PhotoAdapter(); // 外部引入的类
     photoAdapter.setMaxCount(9);
     photoAdapter.setSelectedResId(R.drawable.photo_selected_shadow);
 
@@ -121,11 +121,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
       }
     });
-
+    // 选中图片
     photoAdapter.setOnPhotoSelectedListener(new PhotoAdapter.OnPhotoSelectedListener() {
+      // 该回调在子线程中
       @Override public void onPhotoSelected(final Photo photo, int position) {
         Message message = Message.obtain();
-        message.what = 120;
+        message.what = 120; // 奇葩的标识
         message.obj = photo.getPath();
         puzzleHandler.sendMessage(message);
 
@@ -139,16 +140,17 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    // 图片取消选中
     photoAdapter.setOnPhotoUnSelectedListener(new PhotoAdapter.OnPhotoUnSelectedListener() {
       @Override public void onPhotoUnSelected(Photo photo, int position) {
         Bitmap bitmap = arrayBitmaps.remove(photo.getPath());
-        bitmaps.remove(bitmap);
+        bitmapList.remove(bitmap);
         selectedPath.remove(photo.getPath());
 
-        puzzleAdapter.refreshData(StraightLayoutHelper.getAllThemeLayout(bitmaps.size()), bitmaps);
+        puzzleAdapter.refreshData(StraightLayoutHelper.getAllThemeLayout(bitmapList.size()), bitmapList);
       }
     });
-
+    // 达到最大数量
     photoAdapter.setOnSelectedMaxListener(new PhotoAdapter.OnSelectedMaxListener() {
       @Override public void onSelectedMax() {
         Toast.makeText(MainActivity.this, "装不下了～", Toast.LENGTH_SHORT).show();
@@ -158,13 +160,13 @@ public class MainActivity extends AppCompatActivity {
     ImageView btnCancel = (ImageView) findViewById(R.id.btn_cancel);
     btnCancel.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        if (bitmaps == null || bitmaps.size() == 0) {
+        if (bitmapList == null || bitmapList.size() == 0) {
           onBackPressed();
           return;
         }
 
         arrayBitmaps.clear();
-        bitmaps.clear();
+        bitmapList.clear();
         selectedPath.clear();
 
         photoAdapter.reset();
@@ -222,27 +224,27 @@ public class MainActivity extends AppCompatActivity {
     arrayBitmaps.clear();
     arrayBitmaps = null;
 
-    bitmaps.clear();
-    bitmaps = null;
+    bitmapList.clear();
+    bitmapList = null;
   }
 
   private void refreshLayout() {
     puzzleList.post(new Runnable() {
       @Override public void run() {
-        puzzleAdapter.refreshData(PuzzleUtils.getPuzzleLayouts(bitmaps.size()), bitmaps);
+        puzzleAdapter.refreshData(PuzzleUtils.getPuzzleLayouts(bitmapList.size()), bitmapList);
       }
     });
   }
 
   public void fetchBitmap(final String path) {
     Log.d(TAG, "fetchBitmap: ");
-    final Target target = new Target() {
+    final Target target = new Target() { // Picaso用于存放图片的对象
       @Override public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
         Log.d(TAG, "onBitmapLoaded: ");
 
         arrayBitmaps.put(path, bitmap);
-        bitmaps.add(bitmap);
+        bitmapList.add(bitmap);
         selectedPath.add(path);
 
         puzzleHandler.sendEmptyMessage(119);
@@ -277,10 +279,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override public void handleMessage(Message msg) {
       super.handleMessage(msg);
-      if (msg.what == 119) {
+      if (msg.what == 119) { // 取消选中，刷新界面
         mReference.get().refreshLayout();
       } else if (msg.what == 120) {
-        mReference.get().fetchBitmap((String) msg.obj);
+        mReference.get().fetchBitmap((String) msg.obj); // 添加选中，加载图片
       }
     }
   }

@@ -59,7 +59,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_content_white_24dp"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -87,7 +87,7 @@
 
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_rotate_right_white_24dp"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -114,7 +114,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_flip_horizontal_white_24dp"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -141,7 +141,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_flip_vertical_white_24dp"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -169,7 +169,7 @@
 
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_border_all_white_24dp"
-                    />
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="match_parent"

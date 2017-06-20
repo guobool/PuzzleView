@@ -30,9 +30,9 @@ public class PuzzleAdapter extends RecyclerView.Adapter<PuzzleAdapter.PuzzleView
   @Override public void onBindViewHolder(PuzzleViewHolder holder, int position) {
     final PuzzleLayout puzzleLayout = layoutData.get(position);
 
-    holder.puzzleView.setNeedDrawLine(true);
-    holder.puzzleView.setNeedDrawOuterLine(true);
-    holder.puzzleView.setTouchEnable(false);
+    holder.puzzleView.setNeedDrawLine(true); // 绘制分界
+    holder.puzzleView.setNeedDrawOuterLine(true); // 绘制边界
+    holder.puzzleView.setTouchEnable(false); // 屏蔽触摸事件
 
 
     holder.puzzleView.setPuzzleLayout(puzzleLayout);
